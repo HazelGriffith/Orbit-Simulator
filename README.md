@@ -10,3 +10,4 @@ Current Goals:
 - setup cone regions on earth dependent on longitude and latitude.
 - change satellite spheres to cone arrows [X]
 - apply earth texture [X]
+- colour coded X, Y, Z grid [X]
