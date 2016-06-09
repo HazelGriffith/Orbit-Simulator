@@ -1,8 +1,5 @@
 //NOTE FOR RYAN:
-//Continue work on setting up ambient light through use of the material class and
-//setting a correct material for each object being rendered
 
-package default_package;
 
 import java.awt.Container;
 
@@ -43,8 +40,8 @@ public class Satellites {
   public Satellites() {
 	  
 	  //Variables
-	  int SatArrSize = 5;
-	  float angleOfRotation = (float) (5.0*Math.PI/6.0);
+	  int SatArrSize = 100;
+	  float angleOfRotation = (float) (0.0*Math.PI/6.0);
 	  float[] tempAngleOfRotation = new float[SatArrSize];
 	  for (int i = 0; i< SatArrSize; i++){
 		  tempAngleOfRotation[i] = (float) (Math.random()*Math.PI);
@@ -63,10 +60,11 @@ public class Satellites {
 	  float x1 = (float) Math.sin((Math.PI/2.0f)-angleOfRotation)*GridRadius, y1 = (float) Math.cos((Math.PI/2.0f)-angleOfRotation)*GridRadius, z1 = 0.0f;
 	  double multiplier = 0.0001;
 	  for (int i = 0; i < SatArrSize; i++){
-		  float Temp_radii = (float) Math.random()+(6571/46371);
+		  float Temp_radii =  (float) (Math.random()+(6571.0/46371.0));
 		  xArray[i] = (float) Math.sin((Math.PI/2.0f)-tempAngleOfRotation[i])*Temp_radii;
 		  yArray[i] = (float) Math.cos((Math.PI/2.0f)-tempAngleOfRotation[i])*Temp_radii;
 		  zArray[i] = 0.0f;
+		  //System.out.println(Temp_radii);
 	  }
 	  
 	  //sets the earth image as the texture of Earth and wraps it around the sphere
@@ -78,13 +76,36 @@ public class Satellites {
 	  
 	  TextureAttributes texAttr = new TextureAttributes();
 	  texAttr.setTextureMode(TextureAttributes.MODULATE);
+	  
+	  //Creates Color3f objects to assign the material to different objects.
 	  Color3f meshCA = new Color3f(1.0f, 1.0f, 1.0f);
 	  Color3f meshCD = new Color3f(1.0f, 1.0f, 1.0f);
 	  Color3f meshCS = new Color3f(1.0f, 1.0f, 1.0f);
 	  Color3f meshCE = new Color3f(1.0f, 1.0f, 1.0f);
 	  Material mesh = new Material(meshCA, meshCE, meshCD, meshCS, 0.0f);
+	  Color3f meshCAx = new Color3f(1.0f, 0.0f, 0.0f);
+	  Color3f meshCDx = new Color3f(1.0f, 0.0f, 0.0f);
+	  Color3f meshCSx = new Color3f(1.0f, 0.0f, 0.0f);
+	  Color3f meshCEx = new Color3f(1.0f, 0.0f, 0.0f);
+	  Material meshx = new Material(meshCAx, meshCEx, meshCDx, meshCSx, 0.0f);
+	  Color3f meshCAy = new Color3f(0.0f, 1.0f, 0.0f);
+	  Color3f meshCDy = new Color3f(0.0f, 1.0f, 0.0f);
+	  Color3f meshCSy = new Color3f(0.0f, 1.0f, 0.0f);
+	  Color3f meshCEy = new Color3f(0.0f, 1.0f, 0.0f);
+	  Material meshy = new Material(meshCAy, meshCEy, meshCDy, meshCSy, 0.0f);
+	  Color3f meshCAz = new Color3f(0.0f, 0.0f, 1.0f);
+	  Color3f meshCDz = new Color3f(0.0f, 0.0f, 1.0f);
+	  Color3f meshCSz = new Color3f(0.0f, 0.0f, 1.0f);
+	  Color3f meshCEz = new Color3f(0.0f, 0.0f, 1.0f);
+	  Material meshz = new Material(meshCAz, meshCEz, meshCDz, meshCSz, 0.0f);
+	  Appearance apx = new Appearance();
+	  Appearance apy = new Appearance();
+	  Appearance apz = new Appearance();
 	  Appearance apE = new Appearance();
 	  Appearance apO = new Appearance();
+	  apx.setMaterial(meshx);
+	  apy.setMaterial(meshy);
+	  apz.setMaterial(meshz);
 	  apO.setMaterial(mesh);
 	  apE.setMaterial(mesh);
 	  apE.setTexture(texture);
@@ -104,8 +125,6 @@ public class Satellites {
 	  // s = (w / Math.PI*2.0f)^-1
 	  double milisS = (double)(Math.pow((angular_speedS/(Math.PI*2.0f)), -1.0d)*1000*multiplier);
 	    
-	    
-	    
 	  for (int i = 0; i < SatArrSize; i++){
 	      // Calculates the radius of the satellite.
 	      double TempRadius = (double) Math.sqrt(Math.pow(xArray[i], 2.0)+Math.pow(yArray[i], 2.0)+Math.pow(zArray[i], 2.0))*46371*1000;
@@ -122,7 +141,6 @@ public class Satellites {
 	    
 	  final long milisE =  (long) (86400000*multiplier);
 	
-    
 	//Rotation Transform Groups  
     Transform3D RotateS = new Transform3D();
 	Transform3D[] RotateSatelliteArray = new Transform3D[SatArrSize];
@@ -142,10 +160,8 @@ public class Satellites {
 	}
 	Transform3D m1 = new Transform3D();
 	Transform3D m2 = new Transform3D();
-
 	m1.rotZ(angleOfRotation);
 	m2.rotX(angleOfRotation);
-	
 	m1.mul(m2);
 	RotateS = m1;
 	
@@ -176,12 +192,10 @@ public class Satellites {
     	satelliteArray[i] = new Cone(0.015f, 0.05f, apO);
     }
     
-    
-    
 	//X axis made of spheres
 	
 	for (float x = -1.0f; x <= 1.0f; x+= 0.1f){
-		Sphere sphere = new Sphere(0.005f, apO);
+		Sphere sphere = new Sphere(0.005f, apx);
 		TransformGroup grid = new TransformGroup();
 		Transform3D transform = new Transform3D();
 		Vector3f vector = new Vector3f( x, .0f, .0f);
@@ -196,7 +210,7 @@ public class Satellites {
 	for (float y = -1.0f; y <= 1.0f; y+= 0.1f){
 		TransformGroup grid = new TransformGroup();
 		Transform3D transform = new Transform3D();
-		Cone cone = new Cone(0.005f, 0.1f, apO);
+		Cone cone = new Cone(0.005f, 0.1f, apy);
 		Vector3f vector = new Vector3f(.0f, y, .0f);
 		transform.setTranslation(vector);
 		grid.setTransform(transform);
@@ -209,14 +223,13 @@ public class Satellites {
 	for (float z = -1.0f; z <= 1.0f; z+= 0.1f){
 		TransformGroup grid = new TransformGroup();
 		Transform3D transform = new Transform3D();
-		Cylinder cylinder = new Cylinder(0.005f, 0.01f, apO);
+		Cylinder cylinder = new Cylinder(0.005f, 0.01f, apz);
 		Vector3f vector = new Vector3f(.0f, .0f, z);
 		transform.setTranslation(vector);
 		grid.setTransform(transform);
 		grid.addChild(cylinder);
 		bg.addChild(grid);
 	}
-    
     
     //Create the Inner TransformGroups
     final TransformGroup tgE = new TransformGroup();
