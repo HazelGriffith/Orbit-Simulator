@@ -10,3 +10,5 @@ Current Goals:
 - change satellite spheres to cone arrows [X]
 - apply earth texture [X]
 - colour coded X, Y, Z axes [X]
+
+Currently I am in the proccess of learning how to use quaternions and knots to achieve eliptical rotations.
