@@ -1,5 +1,3 @@
-//NOTE FOR RYAN:
-
 
 import java.awt.Container;
 
@@ -40,11 +38,13 @@ public class Satellites {
   public Satellites() {
 	  
 	  //Variables
-	  int SatArrSize = 100;
+	  int SatArrSize = 20;
 	  float angleOfRotation = (float) (0.0*Math.PI/6.0);
-	  float[] tempAngleOfRotation = new float[SatArrSize];
+	  float[] tempAngleOfRotation1 = new float[SatArrSize];
+	  float[] tempAngleOfRotation2 = new float[SatArrSize];
 	  for (int i = 0; i< SatArrSize; i++){
-		  tempAngleOfRotation[i] = (float) (Math.random()*Math.PI);
+		  tempAngleOfRotation1[i] = (float) (Math.random()*Math.PI);
+		  tempAngleOfRotation2[i] = (float) (Math.random()*Math.PI);
 	  }
 	  
 	  final BranchGroup bg = new BranchGroup();
@@ -54,17 +54,15 @@ public class Satellites {
 	  double[] milisSArray = new double[SatArrSize];
 	  
 	  float GridRadius = (42164.0f/46371.0f);
-      //float GridRadius = 0.3f;
 	  
 	  //First attempt at rotation around an arbitrary axis
 	  float x1 = (float) Math.sin((Math.PI/2.0f)-angleOfRotation)*GridRadius, y1 = (float) Math.cos((Math.PI/2.0f)-angleOfRotation)*GridRadius, z1 = 0.0f;
 	  double multiplier = 0.0001;
 	  for (int i = 0; i < SatArrSize; i++){
 		  float Temp_radii =  (float) (Math.random()+(6571.0/46371.0));
-		  xArray[i] = (float) Math.sin((Math.PI/2.0f)-tempAngleOfRotation[i])*Temp_radii;
-		  yArray[i] = (float) Math.cos((Math.PI/2.0f)-tempAngleOfRotation[i])*Temp_radii;
+		  xArray[i] = (float) Math.sin((Math.PI/2.0f)-tempAngleOfRotation1[i])*Temp_radii;
+		  yArray[i] = (float) Math.cos((Math.PI/2.0f)-tempAngleOfRotation1[i])*Temp_radii;
 		  zArray[i] = 0.0f;
-		  //System.out.println(Temp_radii);
 	  }
 	  
 	  //sets the earth image as the texture of Earth and wraps it around the sphere
@@ -78,10 +76,10 @@ public class Satellites {
 	  texAttr.setTextureMode(TextureAttributes.MODULATE);
 	  
 	  //Creates Color3f objects to assign the material to different objects.
-	  Color3f meshCA = new Color3f(1.0f, 1.0f, 1.0f);
-	  Color3f meshCD = new Color3f(1.0f, 1.0f, 1.0f);
-	  Color3f meshCS = new Color3f(1.0f, 1.0f, 1.0f);
-	  Color3f meshCE = new Color3f(1.0f, 1.0f, 1.0f);
+	  Color3f meshCA = new Color3f(.5f, .5f, .0f);
+	  Color3f meshCD = new Color3f(0.0f, 0.0f, 0.0f);
+	  Color3f meshCS = new Color3f(0.0f, 0.0f, 0.0f);
+	  Color3f meshCE = new Color3f(.0f, .5f, .5f);
 	  Material mesh = new Material(meshCA, meshCE, meshCD, meshCS, 0.0f);
 	  Color3f meshCAx = new Color3f(1.0f, 0.0f, 0.0f);
 	  Color3f meshCDx = new Color3f(1.0f, 0.0f, 0.0f);
@@ -107,11 +105,14 @@ public class Satellites {
 	  apy.setMaterial(meshy);
 	  apz.setMaterial(meshz);
 	  apO.setMaterial(mesh);
-	  apE.setMaterial(mesh);
+	  //apE.setMaterial(mesh);
 	  apE.setTexture(texture);
 	  apE.setTextureAttributes(texAttr);
 	  
 	  int primflags = Primitive.GENERATE_NORMALS + Primitive.GENERATE_TEXTURE_COORDS;
+	  
+	  
+	  //DETERMINES SPEED OF OBJECTS{
 	  
 	  // Calculates the radius of the satellite.
 	  double radius = (double) Math.sqrt(Math.pow(x1, 2.0)+Math.pow(y1, 2.0)+Math.pow(z1, 2.0))*46371*1000;
@@ -141,6 +142,8 @@ public class Satellites {
 	    
 	  final long milisE =  (long) (86400000*multiplier);
 	
+	//  }  
+	
 	//Rotation Transform Groups  
     Transform3D RotateS = new Transform3D();
 	Transform3D[] RotateSatelliteArray = new Transform3D[SatArrSize];
@@ -153,8 +156,8 @@ public class Satellites {
 	for (int i = 0; i < SatArrSize; i++){
 		Transform3D tempM1 = new Transform3D();
 		Transform3D tempM2 = new Transform3D();
-		tempM1.rotZ(tempAngleOfRotation[i]);
-		tempM2.rotX(tempAngleOfRotation[i]);
+		tempM1.rotZ(tempAngleOfRotation1[i]);
+		tempM2.rotX(tempAngleOfRotation2[i]);
 		tempM1.mul(tempM2);
 		RotateSatelliteArray[i] = tempM1;
 	}
@@ -184,8 +187,11 @@ public class Satellites {
     // Creates the Universe in which everything is rendered
     final SimpleUniverse universe = new SimpleUniverse();
 
+    
+    //CREATE THE OBJECTS ON SCREEN
+    
     //Create the spheres
-    final Sphere earth = new Sphere(.1374f, primflags, apE);
+    final Sphere earth = new Sphere(.1374f, primflags, 100, apE);
     final Cone satellite = new Cone(0.015f,0.05f, apO);
     final Cone[] satelliteArray = new Cone[SatArrSize]; 
     for (int i = 0; i < SatArrSize; i++){
@@ -284,6 +290,8 @@ public class Satellites {
     	satellitesArray[i].addChild(tgSArray[i]);
     }
     
+    //MANAGES THE SPEED AND ROTATION OF EACH MOVING OBJECT
+ 
     final Alpha alpha = new Alpha(-1, Alpha.INCREASING_ENABLE, 0, 0, (long)milisS, 0, 0, 0, 0, 0);
     final Alpha alphaE = new Alpha(-1, Alpha.INCREASING_ENABLE, 0, 0, milisE, 0, 0, 0, 0, 0);
     Alpha[] alphaSArray = new Alpha[SatArrSize];
@@ -310,15 +318,13 @@ public class Satellites {
     for (int i = 0; i < SatArrSize; i++){
     	bg.addChild(satellitesArray[i]);
     }
-    //
+    
     
     
     final Color3f light1Color = new Color3f(5.0f, 0.0f, 0.0f);
 
     
     final BoundingSphere bounds = new BoundingSphere(new Point3d(0.0, 0.0, 0.0), 10000000.0);
-   // final Vector3f light1Direction = new Vector3f(4.0f, -7.0f, -12.0f);
-   // final DirectionalLight light1 = new DirectionalLight(light1Color, light1Direction);
     final AmbientLight light1 = new AmbientLight(light1Color);
     light1.setInfluencingBounds(bounds);
     bg.addChild(light1);
