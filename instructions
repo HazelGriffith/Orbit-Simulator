@@ -1,0 +1,6 @@
+1. install the Java3D API. This site gives step by step instructions. https://www.cs.utexas.edu/~scottm/cs324e/handouts/setUpJava3dEclipse.htm
+
+2. Compile and run the code available in the file EllipseTest.java 
+It began as a test to try out different ways to get the satellites to orbit in ellipses, 
+and it eventually just became the next version of the simulation.
+So this is the up to date, fully commented version of the simulation.
