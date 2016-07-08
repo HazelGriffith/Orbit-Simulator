@@ -14,5 +14,5 @@ Current Goals:
 - positive x, y, z axes attached to main satellite. [X]
 - satellite detected when it enters the cone region. [X]
 - equator and prime meridian are drawn on the Earth [X]
-- Satellite points at given point upon entering the cone region[ ] (it works half of the time)
+- Satellite points at given point upon entering the cone region[ ]
 - Satellite point in opposite direction of given point upon entering the cone region (ex. zenith) [ ]
