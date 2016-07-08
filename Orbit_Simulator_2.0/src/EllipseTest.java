@@ -19,13 +19,15 @@ import javax.swing.Timer;
 
 public class EllipseTest extends Applet implements ActionListener, KeyListener {
 	// Determines the amount of randomly generate satellites in orbit
-	int satArrSize = 0;
+	int satArrSize = 20;
 
 	// Creates the button object
 	Button go = new Button("Go");
 
 	// Initializes the TrannsformGroup objects
 	TransformGroup objTrans;
+	TransformGroup[] equator = new TransformGroup[100];
+	TransformGroup[] primeMeridian = new TransformGroup[100];
 	TransformGroup[] Satellites = new TransformGroup[satArrSize];
 	TransformGroup central;
 	TransformGroup[] SatxAxis = new TransformGroup[20];
@@ -70,8 +72,8 @@ public class EllipseTest extends Applet implements ActionListener, KeyListener {
 
 	// custom orbit of manual satellite
 	float xMult = 0.5f;
-	float yMult = 0.5f;
-	float zMult = 0.0f;
+	float yMult = 0.0f;
+	float zMult = 0.5f;
 
 	// variable used to convert from degrees to radians
 	float convert = (float) Math.PI / 180;
@@ -123,103 +125,110 @@ public class EllipseTest extends Applet implements ActionListener, KeyListener {
 	// same
 	// elevation as the manually created satellite
 	Vector3f determinesHeight = new Vector3f();
-	
-	//checks the state change from outside the cone to inside the cone
+
+	// checks the state change from outside the cone to inside the cone
 	Boolean collDetect = false;
 	Boolean satRotation = false;
 
 	public BranchGroup createSceneGraph() {
 
-		//THIS FOR LOOP GENERATES THE RANDOM SATELLITES
+		// THIS FOR LOOP GENERATES THE RANDOM SATELLITES
 		for (int i = 0; i < satArrSize; i++) {
-			
-			//generates each multiplier and makes 50% of them negative
-			xMultArray[i] = (float) (Math.random() * 0.65f + 0.25);
+
+			// generates each multiplier and makes 50% of them negative
+			xMultArray[i] = (float) (Math.random() * 0.65f);
 			if (Math.random() > 0.5) {
 				xMultArray[i] *= -1;
 			}
-			yMultArray[i] = (float) (Math.random() * 0.65f + 0.25);
+			yMultArray[i] = (float) (Math.random() * 0.65f);
 			if (Math.random() > 0.5) {
 				yMultArray[i] *= -1;
 			}
-			zMultArray[i] = (float) (Math.random() * 0.65f + 0.25);
+			zMultArray[i] = (float) (Math.random() * 0.65f);
 			if (Math.random() > 0.5) {
 				zMultArray[i] *= -1;
 			}
 
-			//these bulky if statements setup multiple cases for rotation to
-			//avoid the satellites moving on a linear path
+			// these bulky if statements setup multiple cases for rotation to
+			// avoid the satellites moving on a linear path
 			if (xMultArray[i] == 0) {
-				//THIS IS THE COS COS SIN CASE #1
-				
-				//Calculates the length of the axis when the angle is 0 degrees
+				// THIS IS THE COS COS SIN CASE #1
+
+				// Calculates the length of the axis when the angle is 0 degrees
 				float axisTwo = (float) Math.sqrt(
 						Math.pow(Math.cos(angleS) * xMultArray[i], 2) + Math.pow(Math.cos(angleS) * yMultArray[i], 2)
 								+ Math.pow(Math.sin(angleS) * zMultArray[i], 2));
-				
-				//Calculates the length of the axis when the angle is 90 degrees
+
+				// Calculates the length of the axis when the angle is 90
+				// degrees
 				float axisOne = (float) Math.sqrt(Math.pow(Math.cos(Math.PI / 2.0f) * xMultArray[i], 2)
 						+ Math.pow(Math.cos(Math.PI / 2.0f) * yMultArray[i], 2)
 						+ Math.pow(Math.sin(Math.PI / 2.0f) * zMultArray[i], 2));
 
-				//Calculates the distance between the center of the ellipse and 
-				//a focal point
+				// Calculates the distance between the center of the ellipse and
+				// a focal point
 				float F = (float) Math.sqrt(Math.abs(Math.pow(axisOne, 2) - Math.pow(axisTwo, 2)));
 
-				//checks that the satellites don't appear to move within the earth
-				while (((axisTwo > axisOne)&&(axisTwo - F < 0.17f))^((axisOne > axisTwo)&&(axisOne - F < 0.17f))){
-					
-					//generates each multiplier and makes 50% of them negative
-					xMultArray[i] = (float) (Math.random() * 0.65f + 0.25);
+				// checks that the satellites don't appear to move within the
+				// earth
+				while (((axisTwo > axisOne) && (axisTwo - F < 0.17f))
+						^ ((axisOne > axisTwo) && (axisOne - F < 0.17f))) {
+
+					// generates each multiplier and makes 50% of them negative
+					xMultArray[i] = (float) (Math.random() * 0.65f);
 					if (Math.random() > 0.5) {
 						xMultArray[i] *= -1;
 					}
-					yMultArray[i] = (float) (Math.random() * 0.65f + 0.25);
+					yMultArray[i] = (float) (Math.random() * 0.65f);
 					if (Math.random() > 0.5) {
 						yMultArray[i] *= -1;
 					}
-					zMultArray[i] = (float) (Math.random() * 0.65f + 0.25);
+					zMultArray[i] = (float) (Math.random() * 0.65f);
 					if (Math.random() > 0.5) {
 						zMultArray[i] *= -1;
 					}
-					
-					//Calculates the length of the axis when the angle is 0 degrees
-					axisTwo = (float) Math.sqrt(
-							Math.pow(Math.cos(angleS) * xMultArray[i], 2) + Math.pow(Math.cos(angleS) * yMultArray[i], 2)
-									+ Math.pow(Math.sin(angleS) * zMultArray[i], 2));
-					
-					//Calculates the length of the axis when the angle is 90 degrees
+
+					// Calculates the length of the axis when the angle is 0
+					// degrees
+					axisTwo = (float) Math.sqrt(Math.pow(Math.cos(angleS) * xMultArray[i], 2)
+							+ Math.pow(Math.cos(angleS) * yMultArray[i], 2)
+							+ Math.pow(Math.sin(angleS) * zMultArray[i], 2));
+
+					// Calculates the length of the axis when the angle is 90
+					// degrees
 					axisOne = (float) Math.sqrt(Math.pow(Math.cos(Math.PI / 2.0f) * xMultArray[i], 2)
 							+ Math.pow(Math.cos(Math.PI / 2.0f) * yMultArray[i], 2)
 							+ Math.pow(Math.sin(Math.PI / 2.0f) * zMultArray[i], 2));
 
-					//Calculates the distance between the center of the ellipse and 
-					//a focal point
+					// Calculates the distance between the center of the ellipse
+					// and
+					// a focal point
 					F = (float) Math.sqrt(Math.abs(Math.pow(axisOne, 2) - Math.pow(axisTwo, 2)));
-					
+
 				}
-				
-				//Determines which axis is longest to find out on which axis the
-				//focal points would be.
+
+				// Determines which axis is longest to find out on which axis
+				// the
+				// focal points would be.
 				if (axisTwo > axisOne) {
-						focalLength = new Vector3f((float) Math.cos(angleS) * xMultArray[i],
-								(float) Math.cos(angleS) * yMultArray[i], (float) Math.sin(angleS) * zMultArray[i]);
-						focalLength.normalize();
-						focalLength.x *= F;
-						focalLength.y *= F;
-						focalLength.z *= F;
+					focalLength = new Vector3f((float) Math.cos(angleS) * xMultArray[i],
+							(float) Math.cos(angleS) * yMultArray[i], (float) Math.sin(angleS) * zMultArray[i]);
+					focalLength.normalize();
+					focalLength.x *= F;
+					focalLength.y *= F;
+					focalLength.z *= F;
 				} else if (axisTwo < axisOne) {
-						focalLength = new Vector3f((float) Math.cos(Math.PI / 2.0f) * xMultArray[i],
-								(float) Math.cos(Math.PI / 2.0f) * yMultArray[i],
-								(float) Math.sin(Math.PI / 2.0f) * zMultArray[i]);
-						focalLength.normalize();
-						focalLength.x *= F;
-						focalLength.y *= F;
-						focalLength.z *= F;
+					focalLength = new Vector3f((float) Math.cos(Math.PI / 2.0f) * xMultArray[i],
+							(float) Math.cos(Math.PI / 2.0f) * yMultArray[i],
+							(float) Math.sin(Math.PI / 2.0f) * zMultArray[i]);
+					focalLength.normalize();
+					focalLength.x *= F;
+					focalLength.y *= F;
+					focalLength.z *= F;
 				} else {
 					focalLength = new Vector3f(0.0f, 0.0f, 0.0f);
 				}
-				
+
 				xTransArray[i] = -1 * focalLength.x;
 				yTransArray[i] = -1 * focalLength.y;
 				zTransArray[i] = -1 * focalLength.z;
@@ -228,8 +237,8 @@ public class EllipseTest extends Applet implements ActionListener, KeyListener {
 				ylocArray[i] = (float) Math.cos(angleS) * yMultArray[i] + yTransArray[i];
 				zlocArray[i] = (float) Math.sin(angleS) * zMultArray[i] + zTransArray[i];
 			} else if ((yMultArray[i] == 0) ^ (zMultArray[i] == 0) ^ ((yMultArray[i] != 0) && (zMultArray[i] != 0))) {
-				//THIS IS THE COS SIN SIN CASE #2
-				
+				// THIS IS THE COS SIN SIN CASE #2
+
 				float axisTwo = (float) Math.sqrt(
 						Math.pow(Math.cos(angleS) * xMultArray[i], 2) + Math.pow(Math.sin(angleS) * yMultArray[i], 2)
 								+ Math.pow(Math.sin(angleS) * zMultArray[i], 2));
@@ -237,9 +246,10 @@ public class EllipseTest extends Applet implements ActionListener, KeyListener {
 						+ Math.pow(Math.sin(Math.PI / 2.0f) * yMultArray[i], 2)
 						+ Math.pow(Math.sin(Math.PI / 2.0f) * zMultArray[i], 2));
 				float F = (float) Math.sqrt(Math.abs(Math.pow(axisOne, 2) - Math.pow(axisTwo, 2)));
-				
-				while (((axisTwo > axisOne)&&(axisTwo - F < 0.17f))^((axisOne > axisTwo)&&(axisOne - F < 0.17f))){
-					//generates each multiplier and makes 50% of them negative
+
+				while (((axisTwo > axisOne) && (axisTwo - F < 0.17f))
+						^ ((axisOne > axisTwo) && (axisOne - F < 0.17f))) {
+					// generates each multiplier and makes 50% of them negative
 					xMultArray[i] = (float) (Math.random() * 0.65f + 0.25);
 					if (Math.random() > 0.5) {
 						xMultArray[i] *= -1;
@@ -252,36 +262,36 @@ public class EllipseTest extends Applet implements ActionListener, KeyListener {
 					if (Math.random() > 0.5) {
 						zMultArray[i] *= -1;
 					}
-					
-					axisTwo = (float) Math.sqrt(
-							Math.pow(Math.cos(angleS) * xMultArray[i], 2) + Math.pow(Math.sin(angleS) * yMultArray[i], 2)
-									+ Math.pow(Math.sin(angleS) * zMultArray[i], 2));
+
+					axisTwo = (float) Math.sqrt(Math.pow(Math.cos(angleS) * xMultArray[i], 2)
+							+ Math.pow(Math.sin(angleS) * yMultArray[i], 2)
+							+ Math.pow(Math.sin(angleS) * zMultArray[i], 2));
 					axisOne = (float) Math.sqrt(Math.pow(Math.cos(Math.PI / 2.0f) * xMultArray[i], 2)
 							+ Math.pow(Math.sin(Math.PI / 2.0f) * yMultArray[i], 2)
 							+ Math.pow(Math.sin(Math.PI / 2.0f) * zMultArray[i], 2));
 					F = (float) Math.sqrt(Math.abs(Math.pow(axisOne, 2) - Math.pow(axisTwo, 2)));
-					
+
 				}
-				
+
 				if (axisTwo > axisOne) {
-						
-						focalLength = new Vector3f((float) Math.cos(angleS) * xMultArray[i],
-								(float) Math.sin(angleS) * yMultArray[i], (float) Math.sin(angleS) * zMultArray[i]);
-						
-						focalLength.normalize();
-						focalLength.x *= F;
-						focalLength.y *= F;
-						focalLength.z *= F;
+
+					focalLength = new Vector3f((float) Math.cos(angleS) * xMultArray[i],
+							(float) Math.sin(angleS) * yMultArray[i], (float) Math.sin(angleS) * zMultArray[i]);
+
+					focalLength.normalize();
+					focalLength.x *= F;
+					focalLength.y *= F;
+					focalLength.z *= F;
 				} else if (axisTwo < axisOne) {
-						
-						focalLength = new Vector3f((float) Math.cos(Math.PI / 2.0f) * xMultArray[i],
-								(float) Math.sin(Math.PI / 2.0f) * yMultArray[i],
-								(float) Math.sin(Math.PI / 2.0f) * zMultArray[i]);
-						
-						focalLength.normalize();
-						focalLength.x *= F;
-						focalLength.y *= F;
-						focalLength.z *= F;
+
+					focalLength = new Vector3f((float) Math.cos(Math.PI / 2.0f) * xMultArray[i],
+							(float) Math.sin(Math.PI / 2.0f) * yMultArray[i],
+							(float) Math.sin(Math.PI / 2.0f) * zMultArray[i]);
+
+					focalLength.normalize();
+					focalLength.x *= F;
+					focalLength.y *= F;
+					focalLength.z *= F;
 				} else {
 					focalLength = new Vector3f(0.0f, 0.0f, 0.0f);
 				}
@@ -433,71 +443,6 @@ public class EllipseTest extends Applet implements ActionListener, KeyListener {
 		int primflags = Primitive.GENERATE_NORMALS + Primitive.GENERATE_TEXTURE_COORDS;
 
 		BranchGroup objRoot = new BranchGroup();
-		objTrans = new TransformGroup();
-		central = new TransformGroup();
-		latLong = new TransformGroup();
-		for (int i = 0; i < satArrSize; i++) {
-			Satellites[i] = new TransformGroup();
-			Satellites[i].setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
-			objRoot.addChild(Satellites[i]);
-		}
-		for (int i = 0; i < 20; i++){
-			SatxAxis[i] = new TransformGroup();
-			SatyAxis[i] = new TransformGroup();
-			SatzAxis[i] = new TransformGroup();
-			SatxAxis[i].setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
-			SatyAxis[i].setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
-			SatzAxis[i].setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
-			objRoot.addChild(SatxAxis[i]);
-			objRoot.addChild(SatyAxis[i]);
-			objRoot.addChild(SatzAxis[i]);
-		}
-		objTrans.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
-		central.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
-		latLong.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
-		objRoot.addChild(objTrans);
-		objRoot.addChild(central);
-		objRoot.addChild(latLong);
-
-		// X axis
-		//They're all made of spheres for simplicity's sake
-		
-		for (float x = -5.0f; x <= 5.0f; x += 0.1f) {
-			Sphere xAxis = new Sphere(0.005f, 100, apx);
-			TransformGroup grid = new TransformGroup();
-			Transform3D transform = new Transform3D();
-			Vector3f vector = new Vector3f(x, .0f, .0f);
-			transform.setTranslation(vector);
-			grid.setTransform(transform);
-			grid.addChild(xAxis);
-			objTrans.addChild(grid);
-		}
-
-		// Y axis
-
-		for (float y = -5.0f; y <= 5.0f; y += 0.1f) {
-			TransformGroup grid = new TransformGroup();
-			Transform3D transform = new Transform3D();
-			Sphere yAxis = new Sphere(0.005f, 100, apy);
-			Vector3f vector = new Vector3f(.0f, y, .0f);
-			transform.setTranslation(vector);
-			grid.setTransform(transform);
-			grid.addChild(yAxis);
-			objTrans.addChild(grid);
-		}
-
-		// Z axis
-
-		for (float z = -5.0f; z <= 5.0f; z += 0.1f) {
-			TransformGroup grid = new TransformGroup();
-			Transform3D transform = new Transform3D();
-			Sphere zAxis = new Sphere(0.005f, 100, apz);
-			Vector3f vector = new Vector3f(.0f, .0f, z);
-			transform.setTranslation(vector);
-			grid.setTransform(transform);
-			grid.addChild(zAxis);
-			objTrans.addChild(grid);
-		}
 
 		// Creates the Earth, Region and Satellite objects
 		Cone[] sats = new Cone[satArrSize];
@@ -517,7 +462,7 @@ public class EllipseTest extends Applet implements ActionListener, KeyListener {
 			Satellites[i] = new TransformGroup();
 			Satellites[i].setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
 		}
-		for (int i = 0; i < 20; i++){
+		for (int i = 0; i < 20; i++) {
 			SatxAxis[i] = new TransformGroup();
 			SatyAxis[i] = new TransformGroup();
 			SatzAxis[i] = new TransformGroup();
@@ -525,9 +470,55 @@ public class EllipseTest extends Applet implements ActionListener, KeyListener {
 			SatyAxis[i].setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
 			SatzAxis[i].setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
 		}
+		for (int i = 0; i < 100; i++) {
+			equator[i] = new TransformGroup();
+			primeMeridian[i] = new TransformGroup();
+			equator[i].setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
+			primeMeridian[i].setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
+		}
 		objTrans.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
 		central.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
 		latLong.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
+
+		// X axis
+		// They're all made of spheres for simplicity's sake
+
+		for (float x = -5.0f; x <= 5.0f; x += 0.1f) {
+			Sphere xAxis = new Sphere(0.005f, 100, apx);
+			TransformGroup grid = new TransformGroup();
+			Transform3D transform = new Transform3D();
+			Vector3f vector = new Vector3f(x, .0f, .0f);
+			transform.setTranslation(vector);
+			grid.setTransform(transform);
+			grid.addChild(xAxis);
+			objRoot.addChild(grid);
+		}
+
+		// Y axis
+
+		for (float y = -5.0f; y <= 5.0f; y += 0.1f) {
+			TransformGroup grid = new TransformGroup();
+			Transform3D transform = new Transform3D();
+			Sphere yAxis = new Sphere(0.005f, 100, apy);
+			Vector3f vector = new Vector3f(.0f, y, .0f);
+			transform.setTranslation(vector);
+			grid.setTransform(transform);
+			grid.addChild(yAxis);
+			objRoot.addChild(grid);
+		}
+
+		// Z axis
+
+		for (float z = -5.0f; z <= 5.0f; z += 0.1f) {
+			TransformGroup grid = new TransformGroup();
+			Transform3D transform = new Transform3D();
+			Sphere zAxis = new Sphere(0.005f, 100, apz);
+			Vector3f vector = new Vector3f(.0f, .0f, z);
+			transform.setTranslation(vector);
+			grid.setTransform(transform);
+			grid.addChild(zAxis);
+			objRoot.addChild(grid);
+		}
 
 		// Sets up the initial position of each shape before GO is pressed
 
@@ -535,27 +526,27 @@ public class EllipseTest extends Applet implements ActionListener, KeyListener {
 		Transform3D pos3 = new Transform3D();
 		Transform3D temp = new Transform3D();
 		Transform3D temp2 = new Transform3D();
-		float angle1 = (float) ((-66.56285 - lat - 23.43715)*convert);
-		float angle2 = (float) (lon*convert);
+		float angle1 = (float) ((-66.56285 - lat - 23.43715) * convert);
+		float angle2 = (float) (lon * convert);
 		pos3.rotX(angle1);
 		temp.rotY(angle2);
-		temp2.rotX(23.43715*convert);
+		temp2.rotX(23.43715 * convert);
 		temp.mul(pos3);
 		temp2.mul(temp);
 		Matrix3f matrix = new Matrix3f();
 		temp2.get(matrix);
-		
+
 		Vector3f setupTrans = new Vector3f(0.0f, -1.0f, 0.0f);
 		temp2.transform(setupTrans);
 
 		setupTrans.normalize();
-		
+
 		setupTrans.x *= (0.1539f + height / 2.0f);
 		setupTrans.y *= (0.1539f + height / 2.0f);
 		setupTrans.z *= (0.1539f + height / 2.0f);
 
 		Transform3D initialize = new Transform3D(matrix, setupTrans, 1.0f);
-		
+
 		// Sets up the Earth and Satellite objects
 		Transform3D[] posArray = new Transform3D[satArrSize];
 		for (int i = 0; i < satArrSize; i++) {
@@ -564,9 +555,9 @@ public class EllipseTest extends Applet implements ActionListener, KeyListener {
 		}
 		Transform3D pos1 = new Transform3D();
 		pos1.setTranslation(new Vector3f(satLocation.x, satLocation.y, satLocation.z));
-		
+
 		float xS = 0.0f;
-		for (int i = 0; i < 20; i++){
+		for (int i = 0; i < 20; i++) {
 			Sphere ball = new Sphere(0.005f, 100, apx);
 			Transform3D transform = new Transform3D();
 			transform.setTranslation(new Vector3f(xS, .0f, .0f));
@@ -576,9 +567,9 @@ public class EllipseTest extends Applet implements ActionListener, KeyListener {
 			objRoot.addChild(SatxAxis[i]);
 			xS += 0.01;
 		}
-		
+
 		float yS = 0.0f;
-		for (int i = 0; i < 20; i++){
+		for (int i = 0; i < 20; i++) {
 			Sphere ball = new Sphere(0.005f, 100, apy);
 			Transform3D transform = new Transform3D();
 			transform.setTranslation(new Vector3f(.0f, yS, .0f));
@@ -588,9 +579,9 @@ public class EllipseTest extends Applet implements ActionListener, KeyListener {
 			objRoot.addChild(SatyAxis[i]);
 			yS += 0.01;
 		}
-		
+
 		float zS = 0.0f;
-		for (int i = 0; i < 20; i++){
+		for (int i = 0; i < 20; i++) {
 			Sphere ball = new Sphere(0.005f, 100, apz);
 			Transform3D transform = new Transform3D();
 			transform.setTranslation(new Vector3f(.0f, .0f, zS));
@@ -600,12 +591,49 @@ public class EllipseTest extends Applet implements ActionListener, KeyListener {
 			objRoot.addChild(SatzAxis[i]);
 			zS += 0.01;
 		}
-		
+
 		Transform3D pos2 = new Transform3D();
 		pos2.setTranslation(new Vector3f(0.0f, 0.0f, 0.0f));
 		Transform3D axialTilt = new Transform3D();
 		axialTilt.rotX(23.43715 * convert);
 		axialTilt.mul(pos2);
+
+		// sets up the equator on the earth texture
+		float angle = 0.0f;
+		for (int i = 0; i < 100; i++) {
+			Sphere ball = new Sphere(0.005f, 100, apz);
+			Transform3D transform = new Transform3D();
+			Transform3D rot1 = new Transform3D();
+			Transform3D rot2 = new Transform3D();
+			Transform3D rot3 = new Transform3D();
+			transform.setTranslation(new Vector3f(0.0f, (float) (-1 * Math.sin(23.43715 * convert) * 0.156f),
+					(float) Math.cos(23.43715 * convert) * 0.156f));
+			rot1.rotX(-23.43715 * convert);
+			rot2.rotY(angle * convert);
+			rot3.rotX(23.43715 * convert);
+			rot1.mul(transform);
+			rot2.mul(rot1);
+			rot3.mul(rot2);
+			equator[i].setTransform(rot3);
+			equator[i].addChild(ball);
+			objRoot.addChild(equator[i]);
+			angle += 3.6f;
+		}
+
+		// sets up the prime meridian line made of spheres
+		angle = 0.0f;
+		for (int i = 0; i < 100; i++) {
+			Sphere ball = new Sphere(0.005f, 100, apz);
+			Transform3D transform = new Transform3D();
+			Transform3D rot1 = new Transform3D();
+			transform.setTranslation(new Vector3f(0.0f, 0.0f, 0.156f));
+			rot1.rotX(angle * convert);
+			rot1.mul(transform);
+			primeMeridian[i].setTransform(rot1);
+			primeMeridian[i].addChild(ball);
+			objRoot.addChild(primeMeridian[i]);
+			angle += 3.6f;
+		}
 
 		// Applies the created Transforms and adds them to the Scene Graph
 		for (int i = 0; i < satArrSize; i++) {
@@ -613,7 +641,7 @@ public class EllipseTest extends Applet implements ActionListener, KeyListener {
 			Satellites[i].addChild(sats[i]);
 			objRoot.addChild(Satellites[i]);
 		}
-		
+
 		central.setTransform(axialTilt);
 		objTrans.setTransform(pos1);
 		latLong.setTransform(initialize);
@@ -691,43 +719,45 @@ public class EllipseTest extends Applet implements ActionListener, KeyListener {
 			}
 		} else {
 
-			//calculates rotation angles basedon lat and lon variables
+			// calculates rotation angles basedon lat and lon variables
 			float angle1 = (float) ((-66.56285 - lat - 23.43715) * convert);
 			float angle2 = (float) (lon * convert);
-			
-			//Creates the rotation transforms and multiplies them together
+
+			// Creates the rotation transforms and multiplies them together
 			regRot1.rotX(angle1);
 			regRot2.rotY(angle2);
 			regRot3.rotX(23.43715 * convert);
 			regRot2.mul(regRot1);
 			regRot3.mul(regRot2);
-			
-			//Creates 3x3 matrix that contains the rotation transforms
+
+			// Creates 3x3 matrix that contains the rotation transforms
 			Matrix3f matrix = new Matrix3f();
 			regRot3.get(matrix);
-			
-			//Create vector that translates the cone to the surface of the earth
+
+			// Create vector that translates the cone to the surface of the
+			// earth
 			Vector3f setupTrans = new Vector3f(0.0f, -1.0f, 0.0f);
-			
-			//rotates the vector with the cone region
+
+			// rotates the vector with the cone region
 			regRot3.transform(setupTrans);
 
-			//normalizes the vector and gives the correct length
+			// normalizes the vector and gives the correct length
 			setupTrans.normalize();
 			setupTrans.x *= (0.1539f + height / 2.0f);
 			setupTrans.y *= (0.1539f + height / 2.0f);
 			setupTrans.z *= (0.1539f + height / 2.0f);
-			
-			//creates a point that has the same coordinates as the centre of the
-			//Cone region
+
+			// creates a point that has the same coordinates as the centre of
+			// the
+			// Cone region
 			coneRegion = new Point3f(setupTrans.z, setupTrans.y, setupTrans.x);
 
-			//Combines the rotation matrix and translation vector into one 
-			//Transform3D object
+			// Combines the rotation matrix and translation vector into one
+			// Transform3D object
 			initialize = new Transform3D(matrix, setupTrans, 1.0f);
 
-			//Calculates and applies the correct translation of each randomly
-			//generated satellite.
+			// Calculates and applies the correct translation of each randomly
+			// generated satellite.
 			for (int i = 0; i < satArrSize; i++) {
 				transArray[i] = new Transform3D();
 				radiusArray[i] = (double) (Math
@@ -758,9 +788,9 @@ public class EllipseTest extends Applet implements ActionListener, KeyListener {
 				Satellites[i].setTransform(transArray[i]);
 			}
 
-			//CALCULATES AND APPLIES THE TRANSLATION OF THE MANUALLY CREATED
-			//SATELLITE
-			
+			// CALCULATES AND APPLIES THE TRANSLATION OF THE MANUALLY CREATED
+			// SATELLITE
+
 			// Calculates the radius of the satellite.
 			double radius = (double) Math
 					.sqrt(Math.pow(satLocation.x, 2.0) + Math.pow(satLocation.y, 2.0) + Math.pow(satLocation.z, 2.0))
@@ -776,8 +806,8 @@ public class EllipseTest extends Applet implements ActionListener, KeyListener {
 			// calculate the radians traveled every hundredth of a second.
 			double dist = angular_speedS * 0.01 * 10000;
 
-			//Calculates the correct translation for the manually generated 
-			//satellite
+			// Calculates the correct translation for the manually generated
+			// satellite
 			if (xMult == 0) {
 				satLocation.x = (float) Math.cos(angleS) * xMult + xTrans;
 				satLocation.y = (float) Math.cos(angleS) * yMult + yTrans;
@@ -788,60 +818,62 @@ public class EllipseTest extends Applet implements ActionListener, KeyListener {
 				satLocation.z = (float) Math.sin(angleS) * zMult + zTrans;
 			}
 
-			//Calculates the angle of the satellites rotation, starting at 0
+			// Calculates the angle of the satellites rotation, starting at 0
 			angleS += (float) dist;
-			
-			//Calculates the angle of the earth's rotation, starting at 0
+
+			// Calculates the angle of the earth's rotation, starting at 0
 			angleE += (7.27 * Math.pow(10, -7)) * 10000;
-			
-			//Creates the Transform3D object that is used to rotate the earth
+
+			// Creates the Transform3D object that is used to rotate the earth
 			Transform3D axialTilt = new Transform3D();
 			axialTilt.rotX(23.43715 * convert);
 			rotate.rotY(angleE);
 			rotate.mul(axialTilt);
-			
-			//This rotates the cone region at the same rate as earth
+
+			// This rotates the cone region at the same rate as earth
 			regRot2.rotY(angleE);
 
-			//Thiss combines the initialize transform with the earth rotation
-			//transform
+			// Thiss combines the initialize transform with the earth rotation
+			// transform
 			regRot2.mul(initialize);
-			
-			//This keeps the Point3f object centered in the Cone Region
+
+			// This keeps the Point3f object centered in the Cone Region
 			regRot2.transform(coneRegion);
 
-			//This creates the vector that is used to translate the point 
-			//coneRegion to always be at the same elevation as the manually
-			//generated satellite
+			// This creates the vector that is used to translate the point
+			// coneRegion to always be at the same elevation as the manually
+			// generated satellite
 			determinesHeight = new Vector3f(0.0f, -1.0f, 0.0f);
 			regRot2.transform(determinesHeight);
 			determinesHeight.normalize();
 
-			//Checks if the main satellite has entered the cone region
+			// Checks if the main satellite has entered the cone region
 			if (radius / 41371 / 1000 < height + 0.1539) {
-				
-				//calculates the height difference between the coneRegion point 
-				//and the satellite
+
+				// calculates the height difference between the coneRegion point
+				// and the satellite
 				float heightDiff = (float) (radius / 41371 / 1000) - coneRegion.distance(new Point3f(0.0f, 0.0f, 0.0f));
-				
-				//changes the vector length to the difference in elevation
+
+				// changes the vector length to the difference in elevation
 				determinesHeight.x *= heightDiff;
 				determinesHeight.y *= heightDiff;
 				determinesHeight.z *= heightDiff;
 
-				//Translates the coneRegion point to be at the same height as
-				//satellite
+				// Translates the coneRegion point to be at the same height as
+				// satellite
 				coneRegion.x += determinesHeight.x;
 				coneRegion.y += determinesHeight.y;
 				coneRegion.z += determinesHeight.z;
-				
-				//This determines if the satellite is within the cone
-				if (coneRegion.distance(satLocation) < radperHeight * (coneRegion.distance(new Point3f(0.0f, 0.0f, 0.0f)))-0.1539) {
-					
-					//This if-statement is used to avoid infinite proximity detections
-					//while the satellite is within the cone
-					if (collDetect == true){
-						//System.out.println("COLLISION");
+
+				// This determines if the satellite is within the cone
+				if (coneRegion.distance(
+						satLocation) < radperHeight * (coneRegion.distance(new Point3f(0.0f, 0.0f, 0.0f))) - 0.1539) {
+
+					// This if-statement is used to avoid infinite proximity
+					// detections
+					// while the satellite is within the cone
+					if (collDetect == true) {
+						// System.out.println("COLLISION");
 						satRotation = true;
 						collDetect = false;
 					}
@@ -849,47 +881,53 @@ public class EllipseTest extends Applet implements ActionListener, KeyListener {
 					collDetect = true;
 				}
 			}
-			
-			if (satRotation == true){
+
+			//This section is a work in progress, it currently only works if
+			//the satellite is in the x-y plane.
+			if (satRotation == true) {
 				Point3f target = new Point3f(0.0f, 0.0f, 0.0f);
 				Vector3f checkSign = new Vector3f(0.0f, 1.0f, 0.0f);
-				Vector3f pointDirect = new Vector3f(target.x - satLocation.x, target.y - satLocation.y, target.z - satLocation.z);
-				float angleOfXrot = pointDirect.angle(checkSign);
+				Vector3f pointDirectX = new Vector3f(target.x - satLocation.x, 0.0f, 0.0f);
+				Vector3f pointDirectZ = new Vector3f(target.x - satLocation.x, target.y - satLocation.y, target.z - satLocation.z);
 				
-				if (pointDirect.z < 0 ){
+				float angleOfXrot = pointDirectZ.angle(checkSign);
+				
+				System.out.println(angleOfXrot);
+				if (pointDirectZ.z < 0) {
 					rotateV1.rotX(angleOfXrot);
-				} else if (pointDirect.z >= 0){
+				} else if (pointDirectZ.z >= 0) {
 					rotateV1.rotX(-1 * angleOfXrot);
 				}
 
+			//	System.out.println(checkSign.z);
 				rotateV1.transform(checkSign);
-				float angleofYrot = pointDirect.angle(checkSign);
-				
-				if (checkSign.x > 0){
-					if (pointDirect.z > 0){
-						rotateV2.rotY(-1 * angleofYrot);
-					} else if (pointDirect.z <= 0){
+				float angleofYrot = pointDirectX.angle(checkSign);
+				if (checkSign.z > 0) {
+					if (pointDirectX.x > 0) {
 						rotateV2.rotY(angleofYrot);
+					} else if (pointDirectX.x < 0) {
+						rotateV2.rotY(-1 * angleofYrot);
 					}
-				} else if (checkSign.x <= 0 ){
-					if (pointDirect.z > 0){
-						rotateV2.rotY(angleofYrot);
-					} else if (pointDirect.z <= 0){
+				} else if (checkSign.z <= 0) {
+					if (pointDirectX.x > 0) {
 						rotateV2.rotY(-1 * angleofYrot);
+					} else if (pointDirectX.x < 0) {
+						rotateV2.rotY(angleofYrot);
 					}
 				}
 				rotateV2.mul(rotateV1);
 			}
-			
+
 			Vector3f satPosition = new Vector3f(satLocation.x, satLocation.y, satLocation.z);
 			Transform3D translate = new Transform3D();
 			translate.setTranslation(satPosition);
-			
+
 			rotateV2.get(matrix);
 			ManSatTransF = new Transform3D(matrix, satPosition, 1.0f);
-			
+
+			// rotates and translates the satellite's axes with the satellite
 			float xS = 0.0f;
-			for (int i = 0; i < 20; i++){
+			for (int i = 0; i < 20; i++) {
 				Transform3D transform = new Transform3D();
 				transform.setTranslation(new Vector3f(xS, .0f, .0f));
 				rotateV2.mul(transform);
@@ -899,9 +937,9 @@ public class EllipseTest extends Applet implements ActionListener, KeyListener {
 				rotateV2.set(matrix);
 				translate.set(satPosition);
 			}
-			
+
 			float yS = 0.0f;
-			for (int i = 0; i < 20; i++){
+			for (int i = 0; i < 20; i++) {
 				Transform3D transform = new Transform3D();
 				transform.setTranslation(new Vector3f(.0f, yS, .0f));
 				rotateV2.mul(transform);
@@ -911,9 +949,9 @@ public class EllipseTest extends Applet implements ActionListener, KeyListener {
 				rotateV2.set(matrix);
 				translate.set(satPosition);
 			}
-			
+
 			float zS = 0.0f;
-			for (int i = 0; i < 20; i++){
+			for (int i = 0; i < 20; i++) {
 				Transform3D transform = new Transform3D();
 				transform.setTranslation(new Vector3f(.0f, .0f, zS));
 				rotateV2.mul(transform);
@@ -923,22 +961,59 @@ public class EllipseTest extends Applet implements ActionListener, KeyListener {
 				rotateV2.set(matrix);
 				translate.set(satPosition);
 			}
-			
-			//These statements apply the transform matrices to the objects
+
+			// sets up the equator on the earth texture
+			float angle = 0.0f;
+			for (int i = 0; i < 100; i++) {
+				Transform3D transform = new Transform3D();
+				Transform3D rot1 = new Transform3D();
+				Transform3D rot2 = new Transform3D();
+				Transform3D rot3 = new Transform3D();
+				Transform3D rot4 = new Transform3D();
+				transform.setTranslation(new Vector3f(0.0f, (float) (-1 * Math.sin(23.43715 * convert) * 0.156f),
+						(float) Math.cos(23.43715 * convert) * 0.156f));
+				rot1.rotX(-23.43715 * convert);
+				rot2.rotY(angle * convert);
+				rot3.rotX(23.43715 * convert);
+				rot4.rotY(angleE);
+				rot1.mul(transform);
+				rot2.mul(rot1);
+				rot3.mul(rot2);
+				rot4.mul(rot3);
+				equator[i].setTransform(rot4);
+				angle += 3.6f;
+			}
+
+			// sets up the prime meridian line made of spheres
+			angle = 0.0f;
+			for (int i = 0; i < 100; i++) {
+				Transform3D transform = new Transform3D();
+				Transform3D rot1 = new Transform3D();
+				Transform3D rot2 = new Transform3D();
+				transform.setTranslation(new Vector3f(0.0f, 0.0f, 0.156f));
+				rot1.rotX(angle * convert);
+				rot2.rotY(angleE);
+				rot1.mul(transform);
+				rot2.mul(rot1);
+				primeMeridian[i].setTransform(rot2);
+				angle += 3.6f;
+			}
+
+			// These statements apply the transform matrices to the objects
 			central.setTransform(rotate);
 			objTrans.setTransform(ManSatTransF);
 			latLong.setTransform(regRot2);
 		}
 	}
-
+	
 	public static void main(String[] args) {
-		
+
 		System.out.println("Program started");
 		EllipseTest bb = new EllipseTest();
-		
-		//To be honest I have only a vague idea of how keyListener works,
-		//and I have no idea what MainFrame does. Though I get the impression 
-		//that it creates the window.
+
+		// To be honest I have only a vague idea of how keyListener works,
+		// and I have no idea what MainFrame does. Though I get the impression
+		// that it creates the window.
 		bb.addKeyListener(bb);
 		MainFrame mf = new MainFrame(bb, 256, 256);
 	}
